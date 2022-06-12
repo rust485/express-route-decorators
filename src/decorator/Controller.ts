@@ -7,5 +7,15 @@ export function Controller(basePath: string, ...middleware: Middleware[]) {
     Reflect.defineMetadata(MetadataKeys.middleware, middleware, constructor);
 
     Reflect.decorate([Service], constructor);
+
+    ControllerRegistory.registerController(constructor);
   };
+}
+
+export class ControllerRegistory {
+  static readonly controllers = [];
+
+  static registerController<T>(controller: { new (...params: any[]): T }) {
+    this.controllers.push(controller);
+  }
 }

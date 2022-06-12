@@ -2,6 +2,9 @@ import {isGeneralException} from '@exception';
 import {ControllerRoute, MetadataKeys, Middleware} from '@model';
 import express, {Application, Request, Response, Router} from 'express';
 import Container from 'typedi';
+import fs from 'fs';
+import path from 'path';
+import {ControllerRegistory} from '@decorator';
 
 abstract class ApiServer {
   public readonly instance: Application;
@@ -9,6 +12,7 @@ abstract class ApiServer {
   constructor(port?: number) {
     this.instance = express();
 
+    this._discoverControllers();
     this._registerRoutes();
 
     this.initialize();
@@ -60,10 +64,34 @@ abstract class ApiServer {
     };
   }
 
+  private _discoverControllers() {
+    const projectRootDir = path.dirname(require.main.filename);
+
+    const controllerSuffix = 'controller.ts';
+    const controllerFolder: string = `${projectRootDir}/controllers`;
+
+    const targetPattern = `*.${controllerSuffix}`;
+
+    this._discoverControllersRec(controllerFolder, controllerSuffix);
+  }
+
+  private _discoverControllersRec(path: string, targetPattern: string) {
+    const children = fs.readdirSync(path);
+
+    children.forEach((child) => {
+      if (fs.lstatSync(child).isDirectory()) {
+        this._discoverControllersRec(path, targetPattern);
+        return;
+      }
+
+      if (child.match(targetPattern)) {
+        require(child);
+      }
+    });
+  }
+
   private _registerRoutes() {
-    // TODO
-    [].forEach((controllerClass) => {
-      // controllers.forEach((controllerClass) => {
+    ControllerRegistory.controllers.forEach((controllerClass) => {
       const controllerInstance = Container.get(controllerClass);
 
       const basePath: string = Reflect.getMetadata(MetadataKeys.basePath, controllerClass);
