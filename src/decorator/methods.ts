@@ -1,10 +1,9 @@
-import { ControllerRoute, MetadataKeys, Method, Middleware } from '@model';
+import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
 
-export const Get    = methodDecoratorFactory(Method.get);
-export const Put    = methodDecoratorFactory(Method.put);
-export const Post   = methodDecoratorFactory(Method.post);
+export const Get = methodDecoratorFactory(Method.get);
+export const Put = methodDecoratorFactory(Method.put);
+export const Post = methodDecoratorFactory(Method.post);
 export const Delete = methodDecoratorFactory(Method.delete);
-
 
 
 function methodDecoratorFactory(method: Method) {
@@ -14,7 +13,7 @@ function methodDecoratorFactory(method: Method) {
       const routes = getControllerRoutes(target.constructor);
 
       // push new route to list of existing routes
-      routes.push({ method, path, handlerName: propertyKey, middleware });
+      routes.push({method, path, handlerName: propertyKey, middleware});
     };
   };
 }

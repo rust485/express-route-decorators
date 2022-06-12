@@ -2,7 +2,9 @@ export class GeneralException extends Error {
   constructor(
       err?: string,
       public statusCode?: number,
-  ) { super(err); }
+  ) {
+    super(err);
+  }
 }
 
 export function isGeneralException(obj: any): obj is GeneralException {

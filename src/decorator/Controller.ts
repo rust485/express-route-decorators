@@ -1,5 +1,5 @@
-import { MetadataKeys, Middleware } from "@model";
-import { Service } from "typedi";
+import {MetadataKeys, Middleware} from '@model';
+import {Service} from 'typedi';
 
 export function Controller(basePath: string, ...middleware: Middleware[]) {
   return function<T>(constructor: { new (...params: any[]): T }) {
