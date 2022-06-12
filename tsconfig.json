@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+    "baseUrl": "src",
+		"module": "commonjs",
+		"esModuleInterop": true,
+		"target": "es6",
+		"moduleResolution": "node",
+		"sourceMap": true,
+		"outDir": "dist",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+    "paths": {
+			"@core": ["core"],
+			"@core/*": ["core/*"],
+			"@decorator": ["decorator"],
+      "@decorator/*": ["decorator/*"],
+			"@exception": ["exception"],
+			"@exception/*": ["exception/*"],
+			"@model": ["model"],
+      "@model/*": ["model/*"]
+    }
+	},
+	"lib": [
+		"es2015"
+	]
+}
