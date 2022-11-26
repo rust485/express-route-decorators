@@ -1,5 +1,5 @@
-import { Method } from "./Method";
-import { Middleware } from "./Middleware";
+import {Method} from './Method';
+import {Middleware} from './Middleware';
 
 export interface ControllerRoute {
   method: Method;
