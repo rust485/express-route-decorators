@@ -1,8 +1,35 @@
 import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
 
+/**
+ * Decorator for GET requests.
+ * IMPORTANT: The containing class must be declared with the `@Controller` decorator
+ * @param path path to apply the handler to
+ * @param middleware list of middleware to apply to this handler
+ */
 export const Get = methodDecoratorFactory(Method.get);
+
+/**
+ * Decorator for PUT requests
+ * IMPORTANT: The containing class must be declared with the `@Controller` decorator
+ * @param path path to apply the handler to
+ * @param middleware list of middleware to apply to this handler
+ */
 export const Put = methodDecoratorFactory(Method.put);
+
+/**
+ * Decorator for POST requests
+ * IMPORTANT: The containing class must be declared with the `@Controller` decorator
+ * @param path path to apply the handler to
+ * @param middleware list of middleware to apply to this handler
+ */
 export const Post = methodDecoratorFactory(Method.post);
+
+/**
+ * Decorator for DELETE requests
+ * IMPORTANT: The containing class must be declared with the `@Controller` decorator
+ * @param path path to apply the handler to
+ * @param middleware list of middleware to apply to this handler
+ */
 export const Delete = methodDecoratorFactory(Method.delete);
 
 

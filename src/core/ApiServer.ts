@@ -1,23 +1,42 @@
 import {isGeneralException} from '@exception';
-import {ControllerRoute, MetadataKeys, Middleware} from '@model';
-import express, {Application, Request, Response, Router} from 'express';
+import { ControllerRoute, MetadataKeys, Middleware } from '@model';
+import express, { Application, Request, Response, Router } from 'express';
 import Container from 'typedi';
 import fs from 'fs';
 import path from 'path';
-import {ControllerRegistory} from '@decorator';
+import { ControllerRegistry } from '@decorator';
+import { ServerState } from './ServerState';
+import { Server } from 'http';
 
-abstract class ApiServer {
-  public readonly instance: Application;
+export abstract class ApiServer {
+  private _server: Server;
+  private _state: ServerState;
+
+  private readonly _app: Application;
+  private readonly _port?: number;
 
   constructor(port?: number) {
-    this.instance = express();
+    this._state = ServerState.INITIALIZING;
+    this._port = port;
+    this._app = express();
 
     this._discoverControllers();
     this._registerRoutes();
 
     this.initialize();
+    this._state = ServerState.INITIALIZED;
+  }
 
-    this.instance.listen(port, () => this.afterAppStart());
+  public start() {
+    this._state = ServerState.STARTING;
+    this._server = this._app.listen(this._port, () => this.afterAppStart());
+    this._state = ServerState.RUNNING;
+  }
+
+  public stop() {
+    this._state = ServerState.TERMINATING;
+    this._server.close();
+    this._state = ServerState.TERMINATED;
   }
 
   /**
@@ -67,20 +86,21 @@ abstract class ApiServer {
   private _discoverControllers() {
     const projectRootDir = path.dirname(require.main.filename);
 
-    const controllerSuffix = 'controller.ts';
+    const controllerSuffix = 'controller\.ts';
     const controllerFolder: string = `${projectRootDir}/controllers`;
 
-    const targetPattern = `*.${controllerSuffix}`;
+    const targetPattern = `.*\.${controllerSuffix}`;
 
-    this._discoverControllersRec(controllerFolder, controllerSuffix);
+    this._discoverControllersRec(controllerFolder, targetPattern);
   }
 
-  private _discoverControllersRec(path: string, targetPattern: string) {
-    const children = fs.readdirSync(path);
+  private _discoverControllersRec(targetPath: string, targetPattern: string) {
+    const children = fs.readdirSync(targetPath);
 
-    children.forEach((child) => {
+    children.forEach((childName) => {
+      const child = path.join(targetPath, childName);
       if (fs.lstatSync(child).isDirectory()) {
-        this._discoverControllersRec(path, targetPattern);
+        this._discoverControllersRec(targetPath, targetPattern);
         return;
       }
 
@@ -91,7 +111,7 @@ abstract class ApiServer {
   }
 
   private _registerRoutes() {
-    ControllerRegistory.controllers.forEach((controllerClass) => {
+    ControllerRegistry.controllers.forEach((controllerClass) => {
       const controllerInstance = Container.get(controllerClass);
 
       const basePath: string = Reflect.getMetadata(MetadataKeys.basePath, controllerClass);
@@ -113,8 +133,6 @@ abstract class ApiServer {
       return exRouter[method](path, this._handleRequest(handler), routeMiddleware);
     });
 
-    this.instance.use(basePath, exRouter);
+    this._app.use(basePath, exRouter);
   }
 }
-
-export default ApiServer;
