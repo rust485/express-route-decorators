@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {isGeneralException} from '@exception';
 import { ControllerRoute, MetadataKeys, Middleware } from '@model';
 import express, { Application, Request, Response, Router } from 'express';

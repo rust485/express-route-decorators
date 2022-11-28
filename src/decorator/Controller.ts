@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {MetadataKeys, Middleware} from '@model';
 import {Service} from 'typedi';
 
