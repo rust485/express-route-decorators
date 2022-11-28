@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
 
 /**
