@@ -87,7 +87,8 @@ export abstract class ApiServer {
   protected _initialize(): void { }
 
   private _discoverControllers() {
-    new FileDiscovery(new FileContentMatcher(/\@Controller\(\)/), process.cwd());
+    new FileDiscovery(new FileContentMatcher(/\@Controller/), process.cwd())
+      .findFiles();
   }
 
   private _registerRoutes() {
