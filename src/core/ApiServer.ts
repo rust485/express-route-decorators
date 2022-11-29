@@ -54,22 +54,24 @@ export abstract class ApiServer {
   /**
    * Start the server and begin listening for requests
    */
-  public start() {
+  public async start() {
     if (this._state !== ServerState.UNINITIALIZED)
       return;
 
-    this._init();
+    await this._init();
 
     this._state = ServerState.STARTING;
-    this._server = this._app.listen(this._port, () => this._afterAppStart());
-    this._port = (this._server.address() as AddressInfo).port;
-    this._state = ServerState.RUNNING;
+    this._server = this._app.listen(this._port, () => {
+      this._port = (this._server.address() as AddressInfo).port;
+      this._state = ServerState.RUNNING;
+      this._afterAppStart()
+    });
   }
 
   /**
    * Terminate the server
    */
-  public stop() {
+  public async stop() {
     this._state = ServerState.TERMINATING;
     this._server.close();
     this._state = ServerState.TERMINATED;
@@ -80,7 +82,7 @@ export abstract class ApiServer {
    *
    * Does nothing by default
    */
-  protected _afterAppStart(): void { }
+  protected async _afterAppStart() { }
 
   /**
    * Handles requests by calling the given handler and converts the result
@@ -117,7 +119,7 @@ export abstract class ApiServer {
    *
    * Sets up the json and urlencoded body parsers by default
    */
-  protected _initialize(): void { 
+  protected async _initialize() { 
     this._app.use(bodyParser.json());
     this._app.use(bodyParser.urlencoded({ extended: true }));
   }
@@ -130,11 +132,11 @@ export abstract class ApiServer {
       .findFiles();
   }
 
-  private _init() {
+  private async _init() {
     this._state = ServerState.INITIALIZING;
     this._controllerDir = process.cwd();
 
-    this._initialize();
+    await this._initialize();
 
     this._discoverControllers();
     this._registerRoutes();
