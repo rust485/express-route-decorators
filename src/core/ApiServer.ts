@@ -1,48 +1,73 @@
-import 'reflect-metadata';
+import { FileContentMatcher, FileDiscovery, IMatcher } from '@discovery';
 import {isGeneralException} from '@exception';
 import { StatusCode } from '@http';
 import { ControllerRoute, MetadataKeys, Middleware } from '@model';
+import { Reflect } from '@util/Reflect';
 import express, { Application, Request, Response, Router } from 'express';
-import Container from 'typedi';
-import { ControllerRegistry } from '@decorator';
-import { ServerState } from './ServerState';
 import { Server } from 'http';
-import { FileDiscovery } from '@discovery/FileDiscovery';
-import { FileContentMatcher } from '@discovery/FileContentMatcher';
+import { AddressInfo } from 'net';
+import Container from 'typedi';
+import { ControllerRegistry } from './ControllerRegistry';
+import { ServerState } from './ServerState';
 
+/**
+ * Server that handles discovering controllers and forwarding http requests to controller handlers
+ */
 export abstract class ApiServer {
-  protected static readonly DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred.';
+  protected readonly CONTROLLER_MATCHER: IMatcher = new FileContentMatcher(/\@Controller/);
+  protected readonly DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred.';
 
+  /**
+   * App express object
+   */
+  protected _app: Application;
+
+  /**
+   * Directory to search for controllers in. The default directory is determined by
+   * calling `process.cwd()`
+   */
   protected _controllerDir: string;
 
+  /**
+   * Port number
+   */
+  protected _port?: number;
+
+  /**
+   * Server created from `Application#listen`
+   */
   protected _server: Server;
 
+  /**
+   * Current state of the server
+   */
   protected _state: ServerState;
 
-  protected readonly _app: Application;
-  protected readonly _port?: number;
-
   constructor(port?: number) {
-    this._state = ServerState.INITIALIZING;
+    this._state = ServerState.UNINITIALIZED;
     this._port = port;
 
-    this._controllerDir = process.cwd();
-
     this._app = express();
-
-    this._discoverControllers();
-    this._registerRoutes();
-
-    this._initialize();
-    this._state = ServerState.INITIALIZED;
   }
 
+  /**
+   * Start the server and begin listening for requests
+   */
   public start() {
+    if (this._state !== ServerState.UNINITIALIZED)
+      return;
+
+    this._init();
+
     this._state = ServerState.STARTING;
     this._server = this._app.listen(this._port, () => this._afterAppStart());
+    this._port = (this._server.address() as AddressInfo).port;
     this._state = ServerState.RUNNING;
   }
 
+  /**
+   * Terminate the server
+   */
   public stop() {
     this._state = ServerState.TERMINATING;
     this._server.close();
@@ -79,7 +104,7 @@ export abstract class ApiServer {
         if (isGeneralException(err)) {
           res.status(err.statusCode).json({message: err.message});
         } else {
-          res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: ApiServer.DEFAULT_ERROR_MESSAGE});
+          res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: this.DEFAULT_ERROR_MESSAGE});
         }
       }
     };
@@ -93,11 +118,28 @@ export abstract class ApiServer {
    */
   protected _initialize(): void { }
 
+  /**
+   * Discover (activate by importing) all controllers
+   */
   private _discoverControllers() {
-    new FileDiscovery(new FileContentMatcher(/\@Controller/), process.cwd())
+    new FileDiscovery(this.CONTROLLER_MATCHER, this._controllerDir)
       .findFiles();
   }
 
+  private _init() {
+    this._state = ServerState.INITIALIZING;
+    this._controllerDir = process.cwd();
+
+    this._discoverControllers();
+    this._registerRoutes();
+
+    this._initialize();
+    this._state = ServerState.INITIALIZED
+  }
+
+  /**
+   * Initialize request handlers for each discovered controller
+   */
   private _registerRoutes() {
     ControllerRegistry.controllers.forEach((controllerClass) => {
       const controllerInstance = Container.get(controllerClass);

@@ -1,6 +1,7 @@
-import 'reflect-metadata';
 import {MetadataKeys, Middleware} from '@model';
 import {Service} from 'typedi';
+import { ControllerRegistry } from '@core';
+import { Reflect } from '@util/Reflect';
 
 /**
  * Decorator to be applied to a class containing route endpoints
@@ -18,10 +19,4 @@ export function Controller(basePath: string, ...middleware: Middleware[]) {
   };
 }
 
-export class ControllerRegistry {
-  static readonly controllers = [];
 
-  static registerController<T>(controller: { new (...params: any[]): T }) {
-    this.controllers.push(controller);
-  }
-}

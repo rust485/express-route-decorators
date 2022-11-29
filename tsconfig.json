@@ -22,7 +22,9 @@
 			"@http": ["http"],
 			"@http/*": ["http/*"],
 			"@model": ["model"],
-      "@model/*": ["model/*"]
+      "@model/*": ["model/*"],
+			"@util": ["util"],
+			"@util/*": ["util/*"],
     }
 	},
 	"lib": [

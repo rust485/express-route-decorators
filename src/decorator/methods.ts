@@ -1,5 +1,5 @@
-import 'reflect-metadata';
 import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
+import { Reflect } from '@util/Reflect';
 
 /**
  * Decorator for GET requests.
@@ -35,7 +35,7 @@ export const Delete = methodDecoratorFactory(Method.delete);
 
 
 function methodDecoratorFactory(method: Method) {
-  return (path: string, middleware: Middleware[] = []): MethodDecorator => {
+  return (path: string = '', middleware: Middleware[] = []): MethodDecorator => {
     return (target, propertyKey) => {
       // get routes so far created for the method's controller
       const routes = getControllerRoutes(target.constructor);

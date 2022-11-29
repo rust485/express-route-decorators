@@ -1,4 +1,5 @@
 export enum ServerState {
+  UNINITIALIZED,
   INITIALIZING,
   INITIALIZED,
   STARTING,
