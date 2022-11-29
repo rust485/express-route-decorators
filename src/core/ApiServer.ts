@@ -1,10 +1,9 @@
 import 'reflect-metadata';
 import {isGeneralException} from '@exception';
+import { StatusCode } from '@http';
 import { ControllerRoute, MetadataKeys, Middleware } from '@model';
 import express, { Application, Request, Response, Router } from 'express';
 import Container from 'typedi';
-import fs from 'fs';
-import path from 'path';
 import { ControllerRegistry } from '@decorator';
 import { ServerState } from './ServerState';
 import { Server } from 'http';
@@ -12,7 +11,12 @@ import { FileDiscovery } from '@discovery/FileDiscovery';
 import { FileContentMatcher } from '@discovery/FileContentMatcher';
 
 export abstract class ApiServer {
+  protected static readonly DEFAULT_ERROR_MESSAGE = 'An unexpected error occurred.';
+
+  protected _controllerDir: string;
+
   protected _server: Server;
+
   protected _state: ServerState;
 
   protected readonly _app: Application;
@@ -21,6 +25,9 @@ export abstract class ApiServer {
   constructor(port?: number) {
     this._state = ServerState.INITIALIZING;
     this._port = port;
+
+    this._controllerDir = process.cwd();
+
     this._app = express();
 
     this._discoverControllers();
@@ -67,12 +74,12 @@ export abstract class ApiServer {
       try {
         const result = await handler(req, res);
 
-        res.status(200).json(result);
+        res.status(StatusCode.OK).json(result);
       } catch (err) {
         if (isGeneralException(err)) {
           res.status(err.statusCode).json({message: err.message});
         } else {
-          res.status(500).json({message: 'An unexpected error occurred'});
+          res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: ApiServer.DEFAULT_ERROR_MESSAGE});
         }
       }
     };

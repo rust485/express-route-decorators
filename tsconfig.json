@@ -19,6 +19,8 @@
 			"@discovery/*": ["discovery/*"],
 			"@exception": ["exception"],
 			"@exception/*": ["exception/*"],
+			"@http": ["http"],
+			"@http/*": ["http/*"],
 			"@model": ["model"],
       "@model/*": ["model/*"]
     }
