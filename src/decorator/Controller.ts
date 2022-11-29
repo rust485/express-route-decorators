@@ -13,7 +13,7 @@ export function Controller(basePath: string, ...middleware: Middleware[]) {
     Reflect.defineMetadata(MetadataKeys.basePath, basePath, constructor);
     Reflect.defineMetadata(MetadataKeys.middleware, middleware, constructor);
 
-    Reflect.decorate([Service], constructor);
+    Service()(constructor);
 
     ControllerRegistry.registerController(constructor);
   };
