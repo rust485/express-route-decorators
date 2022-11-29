@@ -134,10 +134,11 @@ export abstract class ApiServer {
     this._state = ServerState.INITIALIZING;
     this._controllerDir = process.cwd();
 
+    this._initialize();
+
     this._discoverControllers();
     this._registerRoutes();
 
-    this._initialize();
     this._state = ServerState.INITIALIZED
   }
 
