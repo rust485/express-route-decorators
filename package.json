@@ -17,7 +17,6 @@
   "author": "Connor Rust (rust485@gmail.com)",
   "license": "ISC",
   "devDependencies": {
-    "@types/express": "^4.17.13",
     "express": "^4.18.1",
     "reflect-metadata": "^0.1.13",
     "tsc-alias": "^1.7.1",
@@ -27,5 +26,8 @@
     "express": "^4.18.1",
     "reflect-metadata": "^0.1.13",
     "typedi": "^0.10.0"
+  },
+  "dependencies": {
+    "@types/express": "^4.17.14"
   }
 }
