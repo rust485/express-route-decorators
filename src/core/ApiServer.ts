@@ -3,7 +3,8 @@ import { isGeneralException } from '@exception';
 import { HttpRequest, HttpResponse, StatusCode } from '@http';
 import { ControllerRoute, MetadataKeys, Middleware } from '@model';
 import { Reflect } from '@util/Reflect';
-import express, { Application, Request, Response, Router } from 'express';
+import bodyParser from 'body-parser';
+import express, { Application, Router } from 'express';
 import { Server } from 'http';
 import { AddressInfo } from 'net';
 import Container from 'typedi';
@@ -114,9 +115,12 @@ export abstract class ApiServer {
    * Initialize resources needed by your server
    * (e.g. initializing database connections)
    *
-   * Does nothing by default
+   * Sets up the json and urlencoded body parsers by default
    */
-  protected _initialize(): void { }
+  protected _initialize(): void { 
+    this._app.use(bodyParser.json());
+    this._app.use(bodyParser.urlencoded({ extended: true }));
+  }
 
   /**
    * Discover (activate by importing) all controllers
