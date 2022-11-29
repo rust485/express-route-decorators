@@ -8,13 +8,15 @@ import path from 'path';
 import { ControllerRegistry } from '@decorator';
 import { ServerState } from './ServerState';
 import { Server } from 'http';
+import { FileDiscovery } from '@discovery/FileDiscovery';
+import { FileContentMatcher } from '@discovery/FileContentMatcher';
 
 export abstract class ApiServer {
-  private _server: Server;
-  private _state: ServerState;
+  protected _server: Server;
+  protected _state: ServerState;
 
-  private readonly _app: Application;
-  private readonly _port?: number;
+  protected readonly _app: Application;
+  protected readonly _port?: number;
 
   constructor(port?: number) {
     this._state = ServerState.INITIALIZING;
@@ -24,13 +26,13 @@ export abstract class ApiServer {
     this._discoverControllers();
     this._registerRoutes();
 
-    this.initialize();
+    this._initialize();
     this._state = ServerState.INITIALIZED;
   }
 
   public start() {
     this._state = ServerState.STARTING;
-    this._server = this._app.listen(this._port, () => this.afterAppStart());
+    this._server = this._app.listen(this._port, () => this._afterAppStart());
     this._state = ServerState.RUNNING;
   }
 
@@ -41,19 +43,11 @@ export abstract class ApiServer {
   }
 
   /**
-   * Initialize resources needed by your server
-   * (e.g. initializing database connections)
-   *
-   * Does nothing by default
-   */
-  public initialize(): void { }
-
-  /**
    * Called after the server begins listening for requests.
    *
    * Does nothing by default
    */
-  public afterAppStart(): void { }
+  protected _afterAppStart(): void { }
 
   /**
    * Handles requests by calling the given handler and converts the result
@@ -84,31 +78,16 @@ export abstract class ApiServer {
     };
   }
 
+  /**
+   * Initialize resources needed by your server
+   * (e.g. initializing database connections)
+   *
+   * Does nothing by default
+   */
+  protected _initialize(): void { }
+
   private _discoverControllers() {
-    const projectRootDir = path.dirname(require.main.filename);
-
-    const controllerSuffix = 'controller\.ts';
-    const controllerFolder: string = `${projectRootDir}/controllers`;
-
-    const targetPattern = `.*\.${controllerSuffix}`;
-
-    this._discoverControllersRec(controllerFolder, targetPattern);
-  }
-
-  private _discoverControllersRec(targetPath: string, targetPattern: string) {
-    const children = fs.readdirSync(targetPath);
-
-    children.forEach((childName) => {
-      const child = path.join(targetPath, childName);
-      if (fs.lstatSync(child).isDirectory()) {
-        this._discoverControllersRec(targetPath, targetPattern);
-        return;
-      }
-
-      if (child.match(targetPattern)) {
-        require(child);
-      }
-    });
+    new FileDiscovery(new FileContentMatcher(/\@Controller\(\)/), process.cwd());
   }
 
   private _registerRoutes() {
