@@ -1,6 +1,6 @@
 import { FileContentMatcher, FileDiscovery, IMatcher } from '@discovery';
-import {isGeneralException} from '@exception';
-import { StatusCode } from '@http';
+import { isGeneralException } from '@exception';
+import { HttpRequest, HttpResponse, StatusCode } from '@http';
 import { ControllerRoute, MetadataKeys, Middleware } from '@model';
 import { Reflect } from '@util/Reflect';
 import express, { Application, Request, Response, Router } from 'express';
@@ -94,8 +94,8 @@ export abstract class ApiServer {
    * Override this if you need different functionality.
    * @param handler
    */
-  protected _handleRequest(handler: (req: Request, res: Response) => any) {
-    return async (req: Request, res: Response) => {
+  protected _handleRequest(handler: (request: HttpRequest, response: HttpResponse) => any) {
+    return async (req: HttpRequest, res: HttpResponse) => {
       try {
         const result = await handler(req, res);
 
