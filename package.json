@@ -1,6 +1,6 @@
 {
   "name": "express-controller-decorators",
-  "version": "1.0.4",
+  "version": "1.1.0",
   "description": "Adds class decorators to allow for placing express route endpoints inside of classes",
   "scripts": {
     "build": "tsc && tsc-alias",
