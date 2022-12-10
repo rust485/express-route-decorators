@@ -1,5 +1,5 @@
 import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
-import { Reflect } from '@util/Reflect';
+import {Reflect} from '@util/Reflect';
 
 /**
  * Decorator for GET requests.
@@ -35,21 +35,22 @@ export const Delete = methodDecoratorFactory(Method.delete);
 
 
 function methodDecoratorFactory(method: Method) {
-  return (path: string = '', middleware: Middleware[] = []): MethodDecorator => {
-    return (target, propertyKey) => {
-      // get routes so far created for the method's controller
-      const routes = getControllerRoutes(target.constructor);
+	return (path = '', middleware: Middleware[] = []): MethodDecorator => {
+		return (target, propertyKey) => {
+			// get routes so far created for the method's controller
+			const routes = getControllerRoutes(target.constructor);
 
-      // push new route to list of existing routes
-      routes.push({method, path, handlerName: propertyKey, middleware});
-    };
-  };
+			// push new route to list of existing routes
+			routes.push({method, path, handlerName: propertyKey, middleware});
+		};
+	};
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 function getControllerRoutes(controllerCtor: Function): ControllerRoute[] {
-  if (!Reflect.hasMetadata(MetadataKeys.routes, controllerCtor)) {
-    Reflect.defineMetadata(MetadataKeys.routes, [], controllerCtor);
-  }
+	if (!Reflect.hasMetadata(MetadataKeys.routes, controllerCtor)) {
+		Reflect.defineMetadata(MetadataKeys.routes, [], controllerCtor);
+	}
 
-  return Reflect.getMetadata(MetadataKeys.routes, controllerCtor);
+	return Reflect.getMetadata(MetadataKeys.routes, controllerCtor);
 }

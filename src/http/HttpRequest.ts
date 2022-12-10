@@ -1,3 +1,3 @@
-import { Request } from 'express';
+import {Request} from 'express';
 
-export interface HttpRequest extends Request {}
+export type HttpRequest = Request

@@ -1,7 +1,7 @@
 import {MetadataKeys, Middleware} from '@model';
 import {Service} from 'typedi';
-import { ControllerRegistry } from '@core';
-import { Reflect } from '@util/Reflect';
+import {ControllerRegistry} from '@core';
+import {Reflect} from '@util/Reflect';
 
 /**
  * Decorator to be applied to a class containing route endpoints
@@ -9,14 +9,12 @@ import { Reflect } from '@util/Reflect';
  * @param middleware list of middleware to apply to all routes in the controller
  */
 export function Controller(basePath: string, ...middleware: Middleware[]) {
-  return function<T>(constructor: { new (...params: any[]): T }) {
-    Reflect.defineMetadata(MetadataKeys.basePath, basePath, constructor);
-    Reflect.defineMetadata(MetadataKeys.middleware, middleware, constructor);
+	return function<T>(constructor: { new (...params: unknown[]): T }) {
+		Reflect.defineMetadata(MetadataKeys.basePath, basePath, constructor);
+		Reflect.defineMetadata(MetadataKeys.middleware, middleware, constructor);
 
-    Service()(constructor);
+		Service()(constructor);
 
-    ControllerRegistry.registerController(constructor);
-  };
+		ControllerRegistry.registerController(constructor);
+	};
 }
-
-

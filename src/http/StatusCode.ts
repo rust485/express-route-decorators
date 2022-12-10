@@ -1,4 +1,5 @@
-export enum StatusCode {  
+/* eslint-disable no-multi-spaces */
+export enum StatusCode {
   CONTINUE                          = 100, // RFC 7231 6.2.1
   SWITCHING_PROTOCOLS               = 101, // RFC 7231 6.2.2
   PROCESSING                        = 102, // RFC 2518 10.1 (obsoleted by RFC 4918)
@@ -62,4 +63,4 @@ export enum StatusCode {
   BANDWIDTH_LIMIT_EXCEEDED          = 509,
   NOT_EXTENDED                      = 510, // RFC 2774 7
   NETWORK_AUTHENTICATION_REQUIRED   = 511, // RFC 6585 6
-};
+}
