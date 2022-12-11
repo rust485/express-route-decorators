@@ -106,7 +106,7 @@ export abstract class ApiServer {
 				res.status(StatusCode.OK).json(result);
 			} catch (err) {
 				if (isGeneralException(err)) {
-					res.status(err.statusCode).json({message: err.message});
+					res.status(err.statusCode).json({body: err.body, message: err.message});
 				} else {
 					res.status(StatusCode.INTERNAL_SERVER_ERROR).json({message: this.DEFAULT_ERROR_MESSAGE});
 				}
