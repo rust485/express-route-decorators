@@ -1,7 +1,7 @@
 import {FileContentMatcher, FileDiscovery, IMatcher} from '@discovery';
 import {isGeneralException} from '@exception';
-import {HttpRequest, HttpResponse, StatusCode} from '@http';
-import {ControllerRoute, MetadataKeys, Middleware} from '@model';
+import {HttpRequest, HttpResponse, StatusCode} from '@model';
+import {ControllerRoute, MetadataKeys, Middleware} from '@core/model';
 import {Reflect} from '@util/Reflect';
 import bodyParser from 'body-parser';
 import express, {Application, Router} from 'express';

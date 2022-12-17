@@ -1,7 +1,7 @@
 export class GeneralException extends Error {
 	constructor(
     public statusCode: number,
-		message?: string,
+    message?: string,
 		public body?: unknown
 	) {
 		super(message);

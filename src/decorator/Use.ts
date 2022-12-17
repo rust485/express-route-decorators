@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import {MetadataKeys, Middleware} from '@model';
+import {MetadataKeys, Middleware} from '@core/model';
 
 /**
  * Set middleware for the given controller or handler

@@ -1,4 +1,4 @@
-import {ControllerRoute, MetadataKeys, Method, Middleware} from '@model';
+import {ControllerRoute, MetadataKeys, Method, Middleware} from '@core/model';
 import {Reflect} from '@util/Reflect';
 
 /**

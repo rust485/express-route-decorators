@@ -1,4 +1,4 @@
-import {MetadataKeys, Middleware} from '@model';
+import {MetadataKeys, Middleware} from '@core/model';
 import {Service} from 'typedi';
 import {ControllerRegistry} from '@core';
 import {Reflect} from '@util/Reflect';
